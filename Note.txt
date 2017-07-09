@@ -1,0 +1,539 @@
+. 1 IPython 基础
+.. 带参数执行
+ipython --pylab
+可在启动ipython的同时集成matplotlib
+
+ipython qtconsole --pylab=inline  (貌似无法执行)
+在启动ipython的时候添加绘图功能
+
+.. 1.1 自动完成
+<Tab>
+
+.. 1.2 内省
+... ? 内省
+print?
+
+... ?? 内省+显示源码
+print?? #但不会显示源码
+
+... ? 搜索命名空间
+配以通配符 * 可以显示出所有与表达式相匹配的名称
+
+.... 例：
+# 显示numpy中包含load的所有函数
+import numpy as np
+np.*load*?
+
+.. 1.3 %run 命令，运行py文件
+相当于批处理一批python指令
+%run test.py
+
+若希望运行的脚本能访问IPython交互式空间中定义的变量，应使用 %run -i 运行脚本
+
+.. 1.4 执行剪贴板中的代码 Ctrl + Shift + V
+Windows系统似乎需要用右键 - 粘贴的方式
+注意：代码块中不能有空行，否则会仅执行到空行的部分，即停止。
+
+.. 1.5 %paste 与 %cpaste 执行剪贴板中的代码
+先复制代码，再在交互式窗口中直接执行 %paste
+
+%cpaste 可以分段粘贴，想要执行时输入 --
+
+.. 1.6 快捷键
+Ctrl P, 或上箭头： 后向搜索命令历史中，以当前输入的文本开头的命令
+Ctrl N, 或下箭头： 前向搜索命令历史中，以当前输入的文本开头的命令
+Ctrl R： 按行读取的反向历史搜索（部分匹配）
+Ctrl Shift V： 粘贴文本
+Ctrl C：中止正在执行的代码
+Ctrl A：移动到行首
+Ctrl E：移动到行尾
+Ctrl K：删除从光标开始至行尾的文本
+Ctrl U：清除当前行的所有文本
+Ctrl F：光标前移一个字符
+Ctrl B：光标后移一个字符
+Ctrl L：清屏
+
+.. 1.7 异常与追踪
+如果用 %run 发生了异常，会额外显示一些上下文的代码供参考
+
+%xmode 可以控制上下文参考代码的数量
+
+.. 1.8 魔术命令 % 开头
+
+%quickref
+%magic
+以上用于列出魔术命令
+
+... 魔术命令技巧
+魔术命令默认可以不带 % 使用，只要没有定义与其重名的变量
+称之为 automagic，并可通过 %automagic 开关
+
+... 常用魔术命令
+%quickref 显示IPython快速参考
+%magic 显示所有魔术命令的详细参考
+%debug 从最新的异常跟踪的底部进入交互式调试器
+%hist 打印命令的输入（可选输出）历史
+%pdb 在异常发生后自动进入调试器
+%paste 执行剪贴板中的代码
+%cpaste 打开一个特殊提示符，以便分块粘贴待执行的代码
+%reset 重置命名空间
+%page OBJECT 通过分页器打印输出OBJECT
+%run script.py 执行一个py脚本
+%prun statement 通过cProfile执行statement，并打印分析器的输出结果
+%time statement 报告statement的执行时间
+%timeit 多次执行statement以计算系统平均执行时间。对执行时间非常小的代码很有用
+%who, %who_ls, %whos 显示交互式命名空间中定义的变量
+%xdel variable 删除变量，并尝试清除其在IPython中的对象上的一切引用
+
+.. 1.9 输入和输出变量
+最近的2个输出结果保存在特殊变量 _ 和 __ 中
+输入的文本被保存在 _iX 中，比如 _i1, _i2, _i3, ...
+  X 指IPython中显示的行号
+
+可以用 exec 重新执行，例如：
+exec _i27
+
+.. 1.10 记录输入和输出
+可以用 %logstart 记录整个控制台会话，包括输入与输出
+
+日志会记录在 ipython_log.py 中
+
+... 配套的魔术命令
+%logoff
+%logon
+%logstate
+%logstop
+
+.. 1.11 与操作系统交互
+
+!cmd 开启一个cmd环境
+output=!cmd args 执行cmd, 并将stdout存入output中
+%alias alias_name cmd 为系统shell命令定义别名
+%bookmark 使用IPython的书签系统, -l 为列出所有书签
+%cd directory 更改系统工作目录为directory
+%pwd 返回系统的当前工作目录， 相当于 os.getcwd()
+%pushd directory 将当前目录入栈，并转向目标目录
+%popd 弹出栈顶目录，并转向该目录
+%dirs 返回一个含有当前目录栈的列表
+%dhist 打印目录访问历史
+%env 以dict(字典)形式返回系统环境变量
+
+.. 1.12 shell命令 !
+以 ! 开头的命令行，表示其后的所有内容在系统shell中执行
+
+... 可使用当前环境中定义的Python变量，只需要在变量前加上$即可
+foo='test*'
+!dir $foo
+
+.. 1.13 交互式调试器
+发生错误时使用 %debug
+即会进入 ipdb 提示符的调试器
+可执行任意代码并查看各个栈帧中的一切对象与数据，默认从最低级开始，可以输入 u 或 d 来上下调整栈跟踪的级别
+
+... 调试器命令
+h(elp) 显示命令列表
+help command 显示command的文档
+c(ontinue) 恢复程序的执行
+q(uit) 退出调试器
+b(read) number 在当前文件的第number行设置一个断点
+b path/to/file.py:number 在指定文件的第number行设置一个断点
+s(tep) 单步进入函数调用
+n(ext) 执行当前行，并前进到当前级别的下一行
+u(p)/d(own) 在函数调用栈中向上或向下移动
+a(rgs) 显示当前函数的参数
+debug statement 在新的(递归)调试器中调用语句statement
+l(ist) statement 显示当前行，及当前栈级别上的上下文参考代码
+w(here) 打印当前位置的完整栈跟踪(包括上下文参考代码)
+
+... 执行py脚本时，直接进入调试模式
+%run -d xxx.py
+
+.. 1.14 基本性能分析 %prun 和 %run -p
+cProfile 模块： 性能分析模块
+P83
+
+通常， %prun (cProfile)用于宏观性能分析， %lprun (line_profiler) 用于微观性能分析
+
+.. 1.15 IPython HTML Notebook
+基于Web技术的交互式计算文档格式
+
+它有一种基于JSON的文档格式 .ipynb
+
+.. 1.16 个性化配置
+
+所有的配置都位于 ipython_config.py 的文件中
+
+. 2 NumPy 基础 - 数组和矢量计算
+Numerical Python，是基础包
+
+NumPy 本身并未提供多高级的分析功能，理解NumPy数组及面向数组的计算有助于更高效地使用Pandas之类的工具。
+
+.. 2.1 ndarray 多维数组对象
+是一个快速灵活的大数据集容器
+
+... 2.1.1 array创建ndarray
+用array函数，接受一切序列型对象（包括其他数组）
+结果为：产生一个新的含有传入数据的NumPy数组
+
+data1=[6, 7.5, 8, 0, 1]
+arr1=np.array(data1)
+
+嵌套序列（例：一组等长列表组成的列表）会被转换为一个多维数组
+data2=[[1,2,3,4],[5,6,7,8]]
+arr2=np.array(data2)
+arr2.ndim #维度
+arr2.shape #维度、数据量
+
+... 2.1.2 zeros 和 ones 和 empty 创建ndarray
+创建指定长度或形状的全 0 或 1 或 垃圾 数组
+np.zeros(10)
+np.ones((3,4))
+np.empty((2,3,2)) #很多情况下，empty返回的是一些未初始化的垃圾值
+
+... 2.1.3 arange 即array的range版本
+np.arange(15)
+Out[46]: array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14])
+
+... 2.1.4 主要数组创建函数
+array 将输入的序列型数据转换为ndarray。要么推断dtype，要么显式指定dtype。默认直接复制输入数据
+asarray 将输入转换为ndarray，如果输入本身就是一个ndarray就不进行复制
+arange 类似于内置的range函数，返回的是一个ndarray而不是列表
+ones, ones_like 根据指定的形状和dtype创建一个全1数组。ones_like以另一个数组为参数，根据其形状和dtype创建一个全2数组
+empty, empty_like 创建新数组，只分配内存空间，但不填充任何值
+eye, identity 创建一个正方的N x N单位矩阵（对角线为1，其余为0）
+
+... 2.1.5 ndarray的数据类型 dtype
+dtype是一个特殊对象，它含有ndarray将一块内存解释为特定数据类型所需要的信息
+类似：
+arr1=np.array([1,2,3], dtype=np.float64)
+arr2=np.array([1,2,3], dtype=np.int32)
+
+常用数据类型
+int8, uint8 有/无符号8位整型
+in16, uint16
+int32, uint32
+int64, uint64
+float16 半精度浮点数
+float32 标准单精度浮点数。兼容C的float
+float64 标准双精度浮点数。兼容C的double，Python的float
+float128 扩展精度浮点数
+comples64, complex128, complex256j 分别用2个32位、64位、或128位浮点数表示的复数
+bool 布尔型，True、False
+object Python对象类型
+string_ 固定长度的字符串类型。
+unicode_ 固定长度的unicode类型
+
+... 2.1.6 显式转换dtype: 通过ndarray的astype方法
+float_arr2=arr2.astype(np.float64)
+
+... 2.1.7 数组和标量之间的运算
+arr=np.array([[1.,2.,3.],[4.,5.,6.]])
+arr * 2 同时对数组中所有元素起效
+arr * arr 对数组中同位置的元素进行运算
+
+... 2.1.8 基本索引与切片
+arr=np.arange(10)
+arr[5:8]=12 #对第5-7个元素进行重新赋值, 操作称为“广播”
+
+.... 注1 切片视图
+数组切片的结果，是指向原数组的指针。对数组切片的操作，会直接反映到原数组上
+
+.... 注2 复制切片
+如果要得到切片的一个复本而非指向（视图），需要显式操作，如：
+arr[5:8].copy()
+
+可视化切片图示，见104页
+
+... 2.1.9 高维数组的元素引用
+二维数组 arr2d=[[1,2,3],[4,5,6],[7,8,9]]，可以如下方式引用
+arr2d[0][2]
+arr2d[0][:2]
+arr2d[:][:2]
+
+... 2.1.10 使用布尔索引
+生成正态分布的随机数
+data=numpy.random.randn(7,4) #生成7x4的二维ndarray数组，内含正态分布随机数
+names=np.array(['Bob','Joe','Will','Bob','Will','Joe','Joe']) #含重复姓名的7元素数组
+
+每个名字对应data中的一行，现在需要取出所有对应于'Bob'的行
+
+使用 names=='Bob' 会生成一个Bool数组
+array([ True, False, False,  True, False, False, False], dtype=bool)
+
+而这个索引，可以取出data中对应的数据
+data[names=='Bob']
+
+混合使用：
+data[names=='Bob', 2:]
+
+要取出 非'Bob' 的值，可以用 !=运算出Bool结果，或用-对Bool结果进行否定运算
+data[names!='Bob']
+data[-(names=='Bob')]
+
+data[(names=='Bob')|(names=='Will')]
+
+... 2.1.11 花式索引 Fancy indexing
+指利用整数数组进行索引
+arr=np.empty((8,4))
+for i in range(8):
+    arr[i]=i
+# 完成对arr的规则形赋值，结果为：
+array([[ 0.,  0.,  0.,  0.],
+       [ 1.,  1.,  1.,  1.],
+       [ 2.,  2.,  2.,  2.],
+       [ 3.,  3.,  3.,  3.],
+       [ 4.,  4.,  4.,  4.],
+       [ 5.,  5.,  5.,  5.],
+       [ 6.,  6.,  6.,  6.],
+       [ 7.,  7.,  7.,  7.]])
+
+为了以特定顺序选取子集，只需要传入一个用于指定顺序的整数列表，或ndarray即可
+arr[[4,3,0,6]] #结果为：
+array([[ 4.,  4.,  4.,  4.],
+       [ 3.,  3.,  3.,  3.],
+       [ 0.,  0.,  0.,  0.],
+       [ 6.,  6.,  6.,  6.]])
+
+
+# 建立一个自然数的指定维度数组：
+arr=np.arange(32).reshape((8,4))
+array([[ 0,  1,  2,  3],
+       [ 4,  5,  6,  7],
+       [ 8,  9, 10, 11],
+       [12, 13, 14, 15],
+       [16, 17, 18, 19],
+       [20, 21, 22, 23],
+       [24, 25, 26, 27],
+       [28, 29, 30, 31]])
+
+In [99]: arr[[1,5,7,2],[0,3,1,2]]
+Out[99]: array([ 4, 23, 29, 10])
+
+最终取同的是元素(1,0),(5,3),(7,1),(2,2)
+
+.... 取出矩阵的子集： np.ix_
+In [101]: arr[np.ix_([1,5,7,2],[0,3,1,2])]
+Out[101]:
+array([[ 4,  7,  5,  6],
+       [20, 23, 21, 22],
+       [28, 31, 29, 30],
+       [ 8, 11,  9, 10]])
+
+解释：取出二维数组arr的第1，5，7，2维数组，并对其中的元素按0，3，1，2的顺序取出
+
+... 2.1.12 数组转置，轴对换
+转置返回的是数组的视图
+使用数组的T属性
+
+In [102]: arr=np.arange(15).reshape((3,5))
+
+In [103]: arr
+Out[103]:
+array([[ 0,  1,  2,  3,  4],
+       [ 5,  6,  7,  8,  9],
+       [10, 11, 12, 13, 14]])
+
+In [104]: arr.T
+Out[104]:
+array([[ 0,  5, 10],
+       [ 1,  6, 11],
+       [ 2,  7, 12],
+       [ 3,  8, 13],
+       [ 4,  9, 14]])
+
+.... 例：计算矩阵的内积
+In [105]: arr=np.random.randn(6,3)
+
+In [106]: arr
+Out[106]:
+array([[ 1.33275693,  0.34214714,  0.76891305],
+       [ 0.56307747, -0.68632747, -0.63588888],
+       [ 0.40039179, -0.82406327,  0.42412719],
+       [ 1.57809747, -0.04094931, -0.12249593],
+       [ 0.64754369, -1.54339234, -0.59218958],
+       [ 1.38345703, -0.99929993,  0.44570234]])
+
+In [107]: np.dot(arr.T,arr)
+Out[107]:
+array([[ 7.07726867, -2.70692922,  0.87636745],
+       [-2.70692922,  4.64952746,  0.82360843],
+       [ 0.87636745,  0.82360843,  1.73981016]])
+
+.... 高维数组的转置： P108 ？？？
+
+... 2.1.13 通用函数(ufunc)：快速的元素级数组函数
+用于对ndarray中的元素进行元素级运算的函数
+
+.... 一元通用函数
+abs, fabs 计算整数、浮点、复数的绝对值。对于非复数值，可以使用更快的fabs
+sqrt 计算各元素的平方根
+square 计算平方
+exp 计算各元素的指数 e^x
+log, log10, log2, log1p 分别为自然对数，10对数，2对数，log(1+x)
+sign 计算各元素的正负号，输出 -1, 0, 1
+ceil 向上取整
+floor 向下取整
+rint 四舍五入到整数，保留dtype
+modf 将数组的小数与整数部分，以2个独立数组的形式返回
+isnan 返回 “NaN”（非数字）的Bool型数组
+isfinite, isinf 返回“有穷数”、“无穷数”的Bool型数组
+cos, coh, sin, sinh, tan, tanh 普通和双曲型三角函数
+arccos, arccosh, arcsin, arcsinh, arctan, arctanh 反三角函数
+logical_not 计算各元素not x的真值，相当于 -arr
+
+..... modf示例
+In [128]: arr
+Out[128]:
+array([ 1.3790475 ,  0.99339656,  8.32526102, -8.39567608,  2.71287954,
+       -6.94283417, -9.17221521])
+
+In [129]: np.modf(arr)
+Out[129]:
+(array([ 0.3790475 ,  0.99339656,  0.32526102, -0.39567608,  0.71287954,
+        -0.94283417, -0.17221521]), array([ 1.,  0.,  8., -8.,  2., -6., -9.]))
+
+
+.... 二元通用函数
+add 将数组中对应的元素相加
+subtract 从第1个数组中减去第2个数组中的元素
+multiply 数组元素相乘
+divide, floor_divide 除法、向下整除法（丢弃余数）
+power 对第一个数组中的元素A，用第二个数组的元素B，计算A^B
+maximum, fmax 最大值，fmax忽略NaN
+minimum, fmin 最小值，fmin忽略NaN
+mod 元素级求模（求余数）
+copysign 将第二个数组中的符号复制给第一个数组中的值
+greater, greater_equal, less, less_equal, equal, not_equal 执行元素级比较，输出Bool数组。相当于>, >=, <, <=, ==, !=
+logical_and, logical_or, logical_xor 执行元素级逻辑运算，相当于 &, |, ^
+
+.. 2.2 利用数组进行数据处理（矢量化）
+可以将需要编写循环的数据处理任务表述为简洁的数组表达式。
+即矢量化
+矢量化数组运算，比等价的纯Python方式快1-2个数量级
+
+... 例：一个中心渐变灰度图
+In [130]: points=np.arange(-5,5,0.01) #10000个间隔相等的点
+In [131]: xs, ys=np.meshgrid(points, points)
+In [135]: import matplotlib.pyplot as plt
+In [136]: z=np.sqrt(xs**2+ys**2)
+In [138]: plt.imshow(z, cmap=plt.cm.gray);plt.colorbar()
+In [139]: plt.title("Image plot of $\sqrt{x^2+y^2}$ for a grid of values")
+In [141]: plt.show()
+
+... 2.2.1 将条件逻辑表述为数组运算 numpy.where
+numpy.where 函数是三元表达式 x if condition else y 的矢量化版本
+xarr=np.array([1.1,1.2,1.3,1.4,1.5])
+yarr=np.array([2.1,2.2,2.3,2.4,2.5])
+cond=np.array([True,False,True,True,False])
+接下去要根据cond中的值选择xarr和yarr的值，True取xarr，False取yarr，则：
+result=np.where(cond, xarr, yarr)
+
+其中第2、3个参数不必是数组，可以是标量值。
+
+.... 例：将随机矩阵的正值替换为2，负值替换为-2
+arr=np.random.randn(4,4)
+np.where(arr>0,2,-2)
+
+refer to P114
+
+... 2.2.2 数学和统计方法
+sum 对数组中全部或某轴向的元素求和。零长度的数组的和为0
+mean 算术平均数。零长度的数组的mean为NaN
+std, var 标准差、方差，自由度可调（默认为n）
+min, max  最大值、最小值
+argmin, argmax 最大和最小元素的索引
+cumsum 所有元素的累计和
+cumprod 所有元素的累计积
+
+... 2.2.3 用于Bool数组的方法
+any 检测数组中是否存在True
+all 检测数组中是否全为True
+
+bools=np.array([False,False,True,False])
+bools.any()
+bools.all()
+
+另外，所有非0元素会视作True
+
+... 2.2.4 排序
+arr=np.random.randn(8)
+arr.sort()
+arr会按排序重新赋值
+
+多维数组可以在任一轴向上进行排序（轴从0开始），只需要将轴编号传给sort
+arr=np.random.randn(5,3)
+arr.sort(1)
+
+.... 例：求5%分位数
+arr=np.random.randn(1000)
+arr.sort()
+arr[int(0.05*len(arr))]
+
+... 2.2.5 唯一值，及其他的集合逻辑
+np.unique 用于找出数组中的唯一值，并返回已排序的结果
+names=np.array(['Bob','Joe','Will','Bob','Will','Joe','Joe'])
+np.unique(names)
+
+np.in1d 测试一个数组中的值，在另一个数组中的成员资格，返回Bool数组
+values=np.array([6,0,0,3,2,5,6])
+np.in1d(values,[2,3,6])
+
+.... 数组的集合运算
+unique(x) 计算x中的唯一元素，并返回有序结果
+intersect1d(x,y) 计算x和y中的公共元素，并返回有序结果
+union1d(x,y) 计算x和y的并集，并返回有序结果
+in1d(x,y) 得到一个表示 x的元素是否包含于y 的Bool数组
+setdiff1d(x,y) 集合的差，即元素在x中但不在y中
+setxor1d(x,y) 集合的对称差（异或），即存在于一个数组中，但不同时存在于两个数组中的元素。
+
+.. 2.3 用于数组的文件输入输出
+... 2.3.1 将数组以二进制格式保存
+文件类型： .npy
+默认情况下是未压缩的原始二进制格式保存
+
+文件类型： .npz
+保存了多个数组的压缩文件
+
+np.save 保存
+np.savez 将多个数组保存到一个压缩文件中
+np.load 读取
+
+np.load('some_array.npy)
+
+np.savez('array_archive.npz', a=arr, b=arr)
+arch=np.load('array_archive.npz')
+arch['b'] #读取数组b
+
+... 2.3.2 存取文本文件
+np.loadtxt 加载
+np.savetxt 保存
+np.genfromtxt 加载，与np.loadtxt差不多，但面向的是结构化数组、及缺失数据处理
+
+.... 加载一个CSV文件到一个数组 loadtxt
+arr=np.loadtxt('test.txt', delimiter=',')
+
+.. 2.4 线性代数 P120
+
+dot 矩阵乘法 - 即是数组方法，也是numpy命名空间中的一个函数
+
+x.dot(y) #等价于 np.dot(x,y)
+x.T.dot(x) #x转置后与x求矩阵乘积
+
+... 2.4.1 numpy.linalg 标准矩阵分解、计算的函数
+from numpy.linalg import inv,qr #示例
+
+常用numpy.linalg函数
+diag 以一维数组的形式返回方阵的对角线（或非对角线）元素，或将一维数组转换为方阵（非对角线元素为0）
+dot 矩阵乘法
+trace 计算对角线元素的和
+det 计算矩阵行列式
+eig 计算方阵的本征值和本征向量
+inv 计算方阵的逆
+pinv 计算矩阵的Moore-Penrose伪逆
+qr 计算QR分解
+svd 计算奇异值分解
+solve 解线性方程组 Ax=b，其中A为一个方阵
+lstsq 计算Ax=b的最小二乘解
+
+.. 2.5 随机数生成
+numpy.random 模块
